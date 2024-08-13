@@ -7,7 +7,7 @@ List<Todo> todos = [
       startTime: '09:00 AM',
       endTime: '11:00 AM',
       description: 'Design the UI for the app',
-      isCompleted: false,
+      isCompleted: true,
   ),
   Todo(
       taskName: 'Work out',
@@ -15,7 +15,7 @@ List<Todo> todos = [
       startTime: '08:00 AM',
       endTime: '09:00 AM',
       description: 'Go to the gym',
-      isCompleted: false,
+      isCompleted: true,
   ),
   Todo(
       taskName: 'Coding',
@@ -23,7 +23,7 @@ List<Todo> todos = [
       startTime: '08:00 AM',
       endTime: '09:00 AM',
       description: 'Build a Website',
-      isCompleted: false,
+      isCompleted: true,
   ),
   Todo(
     taskName: 'Task 1',
@@ -164,5 +164,6 @@ List<Todo> todos = [
     startTime: '3:00 PM',
     endTime: '4:00 PM',
     description: 'Description for Task 20',
+    // isCompleted: true,
   ),
 ];

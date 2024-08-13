@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:class5_app/widgets/banner.dart';
 import 'package:class5_app/data/dummy_data.dart';
-import 'package:flutter/widgets.dart';
+import 'package:class5_app/screens/edit_task.dart';
 
-final kPrimaryColor = Color(0xFF148d8c);
+const kPrimaryColor = Color(0xFF148d8c);
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,6 +17,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double progressValue = todos.where((todo) {
+          return todo.isCompleted == true;
+        }).length /
+        todos.length;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Homepage'),
@@ -37,7 +42,10 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(children: [
           const SizedBox(height: 30),
-          const BannerWidget(),
+          BannerWidget(
+            totalTasks: todos.length,
+            progressIndicatorValue: progressValue,
+          ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,26 +65,42 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: todos.length,
               itemBuilder: (context, index) {
-                return CheckboxListTile(
-                  value: todos[index].isCompleted,
-                  title: Text(todos[index].taskName),
-                  subtitle: Text('${todos[index].startTime} - ${todos[index].endTime}'),
-                  secondary: const Icon(Icons.arrow_forward_ios),
-                  onChanged: (value) {
-                    setState(() {
-                      todos[index].isCompleted = value!;
-                    });
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(width: 2, color: kPrimaryColor),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: CheckboxListTile(
+                    value: todos[index].isCompleted,
+                    title: Text(todos[index].taskName),
+                    subtitle: Text(
+                        '${todos[index].startTime} - ${todos[index].endTime}'),
+                    secondary: const Icon(Icons.arrow_forward_ios),
+                    onChanged: (value) {
+                      setState(() {
+                        todos[index].isCompleted = value!;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: const BorderSide(width: 2, color: kPrimaryColor),
+                    ),
                   ),
                 );
               },
             ),
           ),
         ]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return const EditTaskScreen();
+          }));
+        },
+        backgroundColor: kPrimaryColor,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

@@ -7,10 +7,12 @@ class TextFieldWidget extends StatelessWidget {
     super.key,
     required this.maxLines,
     required this.fieldTitle,
+    required this.controller,
   });
 
   final int maxLines;
   final String fieldTitle;
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class TextFieldWidget extends StatelessWidget {
         ),
         SizedBox(height: 10.0),
         TextField(
+          controller: controller,
           maxLines: maxLines,
           decoration: InputDecoration(border: OutlineInputBorder()),
         ),

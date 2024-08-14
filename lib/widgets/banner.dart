@@ -33,9 +33,7 @@ class BannerWidget extends StatelessWidget {
             '${totalTasks.toString()} Tasks',
             style: const TextStyle(fontSize: 18, color: Colors.white),
           ),
-          const SizedBox(
-            height: 10
-          ),
+          const SizedBox(height: 10),
           Expanded(
             child: Row(
               children: [
@@ -46,6 +44,8 @@ class BannerWidget extends StatelessWidget {
                           left: 60,
                           child: CircleAvatar(
                             // child: Text('L'),
+                            backgroundImage: NetworkImage(
+                                'https://images.unsplash.com/photo-1620000617482-821324eb9a14'),
                             child: Text('L'),
                             radius: 24,
                           )),
@@ -58,6 +58,8 @@ class BannerWidget extends StatelessWidget {
                       Positioned(
                           left: 0,
                           child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                'https://images.unsplash.com/photo-1620000617482-821324eb9a14', scale: 0.01),
                             child: Text('L'),
                             radius: 24,
                           )),

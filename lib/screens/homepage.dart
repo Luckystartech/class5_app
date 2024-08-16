@@ -1,26 +1,26 @@
+import 'package:class5_app/model/todo.dart';
+import 'package:class5_app/provider/color_provider.dart';
+import 'package:class5_app/provider/todos_provider.dart';
+import 'package:class5_app/screens/tasks.dart';
 import 'package:flutter/material.dart';
 import 'package:class5_app/widgets/banner.dart';
-import 'package:class5_app/data/dummy_data.dart';
+// import 'package:class5_app/data/dummy_data.dart';
 import 'package:class5_app/screens/edit_task.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const kPrimaryColor = Color(0xFF148d8c);
-
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
+    @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    Color kPrimaryColor = ref.watch(colorProvider);
+    List<Todo> todos = ref.watch(todosProvider);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  bool isCompleted = false;
-
-  @override
-  Widget build(BuildContext context) {
-    double progressValue = todos.where((todo) {
-          return todo.isCompleted == true;
-        }).length /
-        todos.length;
+    double progressValue = todos.isEmpty
+        ? 0
+        : todos.where((todo) {
+              return todo.isCompleted == true;
+            }).length /
+            todos.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -55,38 +55,51 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const Tasks();
+                  }));
+                },
                 child: const Text('See All'),
               )
             ],
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: CheckboxListTile(
-                    value: todos[index].isCompleted,
-                    title: Text(todos[index].taskName),
-                    subtitle: Text(
-                        '${todos[index].startTime} - ${todos[index].endTime}'),
-                    secondary: const Icon(Icons.arrow_forward_ios),
-                    onChanged: (value) {
-                      setState(() {
-                        todos[index].isCompleted = value!;
-                      });
+            child: todos.isEmpty
+                ? const Center(
+                    child: Text('No Task Found'),
+                  )
+                : ListView.builder(
+                    itemCount: todos.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: CheckboxListTile(
+                          value: todos[index].isCompleted,
+                          title: Text(todos[index].taskName),
+                          subtitle: Text(
+                              '${todos[index].startTime} - ${todos[index].endTime}'),
+                          secondary: const Icon(Icons.arrow_forward_ios),
+                          onChanged: (value) {
+                            // setState(() {
+                              todos[index].isCompleted = value!;
+                              ref.read(todosProvider.notifier).insertAtIndex(todos[index]);
+                            // });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                              width: 2,
+                              color: kPrimaryColor,
+                            ),
+                          ),
+                        ),
+                      );
                     },
-                    controlAffinity: ListTileControlAffinity.leading,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: const BorderSide(width: 2, color: kPrimaryColor),
-                    ),
                   ),
-                );
-              },
-            ),
           ),
         ]),
       ),

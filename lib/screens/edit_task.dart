@@ -1,26 +1,47 @@
+import 'package:class5_app/provider/color_provider.dart';
+import 'package:class5_app/provider/todos_provider.dart';
 import 'package:class5_app/screens/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:class5_app/widgets/text_field_widget.dart';
 import 'package:class5_app/widgets/date_time_widget.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:class5_app/model/todo.dart';
-import 'package:class5_app/data/dummy_data.dart';
+// import 'package:class5_app/data/dummy_data.dart';
 
-const kPrimaryColor = Color(0xFF148d8c);
+class EditTaskScreen extends ConsumerStatefulWidget {
+  const EditTaskScreen({
+    super.key,
+    this.task,
+    this.taskIndex,
+  });
 
-class EditTaskScreen extends StatefulWidget {
-  const EditTaskScreen({super.key});
+  final Todo? task;
+  final int? taskIndex;
 
   @override
-  State<EditTaskScreen> createState() => _EditTaskScreenState();
+  ConsumerState<EditTaskScreen> createState() => _EditTaskScreenState();
 }
 
-class _EditTaskScreenState extends State<EditTaskScreen> {
-  final taskNameController = TextEditingController();
-  final descriptionController = TextEditingController();
+class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
+  TextEditingController taskNameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   String selectedDate = '';
   String startTime = '';
   String endTime = '';
+
+  @override
+  void initState() {
+    if (widget.task != null) {
+      taskNameController = TextEditingController(text: widget.task!.taskName);
+      descriptionController =
+          TextEditingController(text: widget.task!.description);
+      selectedDate = widget.task!.date;
+      startTime = widget.task!.startTime;
+      endTime = widget.task!.endTime;
+    }
+    super.initState();
+  }
 
   void onSelectDate() async {
     DateTime? pickedDate = await showDatePicker(
@@ -69,36 +90,37 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
     }
   }
 
-  void onSubmitTask() {
-    setState(() {
-      taskNameController.clear();
-      descriptionController.clear();
-      selectedDate = '';
-      startTime = '';
-      endTime = '';
-
-      // showDialog(context: context, builder: (context){
-      //   return AlertDialog(
-      //     title: const Text('Task Added Successfully'),
-      //   );
-      // });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: Duration(milliseconds: 30),
-          backgroundColor: kPrimaryColor,
-          content: Text('Task Added Successfully'),
-        ),
-      );
-
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return const HomePage();
-      }));
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    Color kPrimaryColor = ref.watch(colorProvider);
+    void onSubmitTask() {
+      setState(() {
+        taskNameController.clear();
+        descriptionController.clear();
+        selectedDate = '';
+        startTime = '';
+        endTime = '';
+
+        // showDialog(context: context, builder: (context){
+        //   return AlertDialog(
+        //     title: const Text('Task Added Successfully'),
+        //   );
+        // });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(milliseconds: 30),
+            backgroundColor: kPrimaryColor,
+            content: Text('Task Added Successfully'),
+          ),
+        );
+
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return const HomePage();
+        }));
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Task'),
@@ -180,15 +202,25 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                     endTime: endTime,
                     description: descriptionController.text.trim(),
                   );
-
-                  todos.add(newTask);
+                  if (widget.taskIndex != null) {
+                    // todos.removeAt(widget.taskIndex!);
+                    ref
+                        .read(todosProvider.notifier)
+                        .removeIndex(widget.taskIndex!);
+                    ref.read(todosProvider.notifier).addTodo(newTask);
+                    // todos.insert(0, newTask);
+                    // todos[widget.taskIndex!] = newTask;
+                  } else {
+                    // todos.add(newTask);
+                    ref.read(todosProvider.notifier).addTodo(newTask);
+                  }
                   onSubmitTask();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
+                    SnackBar(
                       // duration: Duration(milliseconds: 30),
                       backgroundColor: kPrimaryColor,
-                      content: Text('Please Fill all Fields'),
+                      content: const Text('Please Fill all Fields'),
                     ),
                   );
                 }

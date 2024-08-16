@@ -1,8 +1,8 @@
+import 'package:class5_app/provider/color_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const kPrimaryColor = Color(0xFF148d8c);
-
-class BannerWidget extends StatelessWidget {
+class BannerWidget extends ConsumerWidget {
   const BannerWidget({
     super.key,
     required this.totalTasks,
@@ -13,7 +13,8 @@ class BannerWidget extends StatelessWidget {
   final double progressIndicatorValue;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    Color kPrimaryColor = ref.watch(colorProvider);
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.2,
@@ -59,7 +60,8 @@ class BannerWidget extends StatelessWidget {
                           left: 0,
                           child: CircleAvatar(
                             backgroundImage: NetworkImage(
-                                'https://images.unsplash.com/photo-1620000617482-821324eb9a14', scale: 0.01),
+                                'https://images.unsplash.com/photo-1620000617482-821324eb9a14',
+                                scale: 0.01),
                             child: Text('L'),
                             radius: 24,
                           )),

@@ -1,5 +1,6 @@
 import 'package:class5_app/model/todo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:class5_app/cache/shared_preference.dart';
 
 class TodosNotifier extends StateNotifier<List<Todo>> {
   TodosNotifier()
@@ -20,20 +21,32 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
             description: 'Go to the gym',
             isCompleted: true,
           ),
-        ]);
+        ]) {
+    loadcacheTodos();
+  }
+
+  void loadcacheTodos() async {
+    List<Todo> todos = await loadTodos();
+    if (todos.isNotEmpty){
+      state = todos;
+    }
+  }
 
   void addTodo(Todo task) {
     state = [...state, task];
+    saveTodos(state);
   }
 
   void deleteTask(Todo task) {
     state.remove(task);
     state = [...state];
+    saveTodos(state);
   }
 
   void removeIndex(int taskIndex) {
     state.removeAt(taskIndex);
     state = [...state];
+    saveTodos(state);
   }
 
   void insertAtIndex(Todo task) {
@@ -41,6 +54,7 @@ class TodosNotifier extends StateNotifier<List<Todo>> {
     state.removeAt(taskIndex);
     state.insert(taskIndex, task);
     state = [...state];
+    saveTodos(state);
   }
 }
 
